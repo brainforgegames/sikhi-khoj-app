@@ -17,6 +17,18 @@
   <script defer src="app.js"></script>
 </head>
 <body>
+  <div class="language-gate" id="language-gate" role="dialog" aria-modal="true" aria-labelledby="language-title">
+    <div class="language-card">
+      <img src="assets/images/app-icon.webp" alt="" width="72" height="72">
+      <span class="language-kicker">SIKHI KHOJ</span>
+      <h2 id="language-title">ਆਪਣੀ ਭਾਸ਼ਾ ਚੁਣੋ<br><small>Choose your language</small></h2>
+      <p>ਤੁਸੀਂ ਇਸਨੂੰ ਬਾਅਦ ਵਿੱਚ ਵੀ ਬਦਲ ਸਕਦੇ ਹੋ।<br><small>You can change this any time.</small></p>
+      <div class="language-options">
+        <button type="button" data-language-choice="pa"><b>ਪੰਜਾਬੀ</b><small>Punjabi</small></button>
+        <button type="button" data-language-choice="en"><b>English</b><small>ਅੰਗਰੇਜ਼ੀ</small></button>
+      </div>
+    </div>
+  </div>
   <a class="skip-link" href="#main">ਮੁੱਖ ਸਮੱਗਰੀ ਵੱਲ ਜਾਓ / Skip to content</a>
   <header class="site-header" aria-label="Primary navigation">
     <a class="brand" href="#top" aria-label="Sikhi Khoj home">
@@ -24,9 +36,10 @@
       <span><b lang="pa">ਸਿੱਖੀ ਖੋਜ</b><small lang="en">SIKHI KHOJ</small></span>
     </a>
     <nav>
-      <a href="#about"><span lang="pa">ਐਪ ਬਾਰੇ</span><small lang="en">About</small></a>
-      <a href="#quiz"><span lang="pa">ਕੁਇਜ਼</span><small lang="en">Quiz</small></a>
-      <a class="nav-cta" href="#register"><span lang="pa">ਸੂਚਨਾ ਲਵੋ</span><small lang="en">Get notified</small></a>
+      <a href="#about"><span data-pa="ਐਪ ਬਾਰੇ" data-en="About">ਐਪ ਬਾਰੇ</span></a>
+      <a href="#quiz"><span data-pa="ਕੁਇਜ਼" data-en="Quiz">ਕੁਇਜ਼</span></a>
+      <a class="nav-cta" href="#register"><span data-pa="ਸੂਚਨਾ ਲਵੋ" data-en="Get notified">ਸੂਚਨਾ ਲਵੋ</span></a>
+      <button class="language-switch" id="language-switch" type="button" aria-label="Change language"><span>ਪੰ</span><small>EN</small></button>
     </nav>
   </header>
 
@@ -34,16 +47,14 @@
     <section class="hero" id="top">
       <div class="hero-backdrop" aria-hidden="true"></div>
       <div class="hero-copy reveal">
-        <span class="eyebrow"><i></i><span lang="pa">ਜਲਦ ਆ ਰਹੀ ਹੈ</span><small lang="en">COMING SOON</small></span>
-        <h1 lang="pa">ਸਿੱਖੀ ਨੂੰ ਜਾਣੋ।<br><em>ਆਪਣੇ ਵਿਰਸੇ ਨਾਲ ਜੁੜੋ।</em></h1>
-        <p class="english-lead" lang="en">Discover Sikhi. Connect with your heritage.</p>
-        <p class="hero-note" lang="pa">ਪੰਜਾਬੀ ਅਤੇ English ਵਿੱਚ ਛੋਟੇ ਪਾਠ, ਦਿਲਚਸਪ ਕੁਇਜ਼ ਅਤੇ ਆਪਣੀ ਰਫ਼ਤਾਰ ਨਾਲ ਸਿੱਖਣ ਦਾ ਸਫ਼ਰ।</p>
-        <p class="translation" lang="en">Short bilingual lessons, thoughtful quizzes, and a learning journey at your own pace.</p>
+        <span class="eyebrow"><i></i><span data-pa="ਜਲਦ ਆ ਰਹੀ ਹੈ" data-en="COMING SOON">ਜਲਦ ਆ ਰਹੀ ਹੈ</span></span>
+        <h1 data-html data-pa="ਸਿੱਖੀ ਨੂੰ ਜਾਣੋ।<br><em>ਆਪਣੇ ਵਿਰਸੇ ਨਾਲ ਜੁੜੋ।</em>" data-en="Discover Sikhi.<br><em>Connect with your heritage.</em>">ਸਿੱਖੀ ਨੂੰ ਜਾਣੋ।<br><em>ਆਪਣੇ ਵਿਰਸੇ ਨਾਲ ਜੁੜੋ।</em></h1>
+        <p class="hero-note" data-pa="ਪੰਜਾਬੀ ਅਤੇ English ਵਿੱਚ ਛੋਟੇ ਪਾਠ, ਦਿਲਚਸਪ ਕੁਇਜ਼ ਅਤੇ ਆਪਣੀ ਰਫ਼ਤਾਰ ਨਾਲ ਸਿੱਖਣ ਦਾ ਸਫ਼ਰ।" data-en="Short bilingual lessons, thoughtful quizzes, and a learning journey at your own pace.">ਪੰਜਾਬੀ ਅਤੇ English ਵਿੱਚ ਛੋਟੇ ਪਾਠ, ਦਿਲਚਸਪ ਕੁਇਜ਼ ਅਤੇ ਆਪਣੀ ਰਫ਼ਤਾਰ ਨਾਲ ਸਿੱਖਣ ਦਾ ਸਫ਼ਰ।</p>
         <div class="hero-actions">
-          <a class="button button-primary" href="#quiz"><span lang="pa">5 ਸਵਾਲਾਂ ਦਾ ਕੁਇਜ਼ ਖੇਡੋ</span><small lang="en">PLAY THE 5-QUESTION QUIZ</small></a>
-          <a class="button button-ghost" href="#register"><span lang="pa">ਲਾਂਚ ਦੀ ਸੂਚਨਾ ਲਵੋ</span><small lang="en">JOIN THE LAUNCH LIST</small></a>
+          <a class="button button-primary" href="#quiz"><span data-pa="5 ਸਵਾਲਾਂ ਦਾ ਕੁਇਜ਼ ਖੇਡੋ" data-en="PLAY THE 5-QUESTION QUIZ">5 ਸਵਾਲਾਂ ਦਾ ਕੁਇਜ਼ ਖੇਡੋ</span></a>
+          <a class="button button-ghost" href="#register"><span data-pa="ਲਾਂਚ ਦੀ ਸੂਚਨਾ ਲਵੋ" data-en="JOIN THE LAUNCH LIST">ਲਾਂਚ ਦੀ ਸੂਚਨਾ ਲਵੋ</span></a>
         </div>
-        <p class="launch-platforms"><span aria-hidden="true">●</span> iPhone ਅਤੇ Android ਲਈ ਤਿਆਰ ਹੋ ਰਹੀ ਹੈ <small>Being built for iPhone and Android</small></p>
+        <p class="launch-platforms"><span aria-hidden="true">●</span> <b data-pa="iPhone ਅਤੇ Android ਲਈ ਤਿਆਰ ਹੋ ਰਹੀ ਹੈ" data-en="Being built for iPhone and Android">iPhone ਅਤੇ Android ਲਈ ਤਿਆਰ ਹੋ ਰਹੀ ਹੈ</b></p>
       </div>
 
       <div class="phone-stage reveal" aria-label="Sikhi Khoj app preview">
@@ -74,73 +85,66 @@
     </section>
 
     <section class="proof-strip" aria-label="App highlights">
-      <div><b>2</b><span lang="pa">ਭਾਸ਼ਾਵਾਂ</span><small lang="en">Punjabi + English</small></div>
-      <div><b>5</b><span lang="pa">ਸਿੱਖਣ ਦੇ ਖੇਤਰ</span><small lang="en">Learning areas</small></div>
-      <div><b>∞</b><span lang="pa">ਆਪਣੀ ਰਫ਼ਤਾਰ</span><small lang="en">Your own pace</small></div>
+      <div><b>2</b><span data-pa="ਭਾਸ਼ਾਵਾਂ" data-en="Languages">ਭਾਸ਼ਾਵਾਂ</span><small>Punjabi + English</small></div>
+      <div><b>5</b><span data-pa="ਸਿੱਖਣ ਦੇ ਖੇਤਰ" data-en="Learning areas">ਸਿੱਖਣ ਦੇ ਖੇਤਰ</span></div>
+      <div><b>∞</b><span data-pa="ਆਪਣੀ ਰਫ਼ਤਾਰ" data-en="Your own pace">ਆਪਣੀ ਰਫ਼ਤਾਰ</span></div>
     </section>
 
     <section class="about section" id="about">
-      <div class="section-kicker"><span>01</span><i></i><small>ਖੋਜੋ · DISCOVER</small></div>
+      <div class="section-kicker"><span>01</span><i></i><small data-pa="ਖੋਜੋ" data-en="DISCOVER">ਖੋਜੋ</small></div>
       <div class="section-heading reveal">
-        <h2 lang="pa">ਸਿੱਖਣਾ ਜੋ <em>ਤੁਹਾਡੇ ਨਾਲ ਚੱਲੇ</em></h2>
-        <p lang="pa">ਰੋਜ਼ਾਨਾ ਜੀਵਨ ਵਿੱਚ ਆਸਾਨੀ ਨਾਲ ਸ਼ਾਮਲ ਹੋਣ ਵਾਲੇ, ਸਤਿਕਾਰ ਨਾਲ ਤਿਆਰ ਕੀਤੇ ਛੋਟੇ ਪਾਠ।</p>
-        <p class="translation" lang="en">Respectfully prepared, bite-sized learning designed to fit naturally into everyday life.</p>
+        <h2 data-html data-pa="ਸਿੱਖਣਾ ਜੋ <em>ਤੁਹਾਡੇ ਨਾਲ ਚੱਲੇ</em>" data-en="Learning that <em>moves with you</em>">ਸਿੱਖਣਾ ਜੋ <em>ਤੁਹਾਡੇ ਨਾਲ ਚੱਲੇ</em></h2>
+        <p data-pa="ਰੋਜ਼ਾਨਾ ਜੀਵਨ ਵਿੱਚ ਆਸਾਨੀ ਨਾਲ ਸ਼ਾਮਲ ਹੋਣ ਵਾਲੇ, ਸਤਿਕਾਰ ਨਾਲ ਤਿਆਰ ਕੀਤੇ ਛੋਟੇ ਪਾਠ।" data-en="Respectfully prepared, bite-sized learning designed to fit naturally into everyday life.">ਰੋਜ਼ਾਨਾ ਜੀਵਨ ਵਿੱਚ ਆਸਾਨੀ ਨਾਲ ਸ਼ਾਮਲ ਹੋਣ ਵਾਲੇ, ਸਤਿਕਾਰ ਨਾਲ ਤਿਆਰ ਕੀਤੇ ਛੋਟੇ ਪਾਠ।</p>
       </div>
       <div class="feature-grid">
         <article class="feature reveal">
           <span class="feature-number">01</span>
           <div class="feature-icon" aria-hidden="true">ਪੰ</div>
-          <h3 lang="pa">ਪੰਜਾਬੀ ਪਹਿਲਾਂ</h3>
-          <p lang="pa">ਸੁਭਾਵਿਕ ਪੰਜਾਬੀ ਨਾਲ English ਸਹਾਇਤਾ—ਜਦੋਂ ਤੁਹਾਨੂੰ ਲੋੜ ਹੋਵੇ।</p>
-          <small lang="en">Punjabi first, with English support whenever you need it.</small>
+          <h3 data-pa="ਪੰਜਾਬੀ ਪਹਿਲਾਂ" data-en="Punjabi first">ਪੰਜਾਬੀ ਪਹਿਲਾਂ</h3>
+          <p data-pa="ਸੁਭਾਵਿਕ ਪੰਜਾਬੀ ਨਾਲ English ਸਹਾਇਤਾ—ਜਦੋਂ ਤੁਹਾਨੂੰ ਲੋੜ ਹੋਵੇ।" data-en="Natural Punjabi with English support whenever you need it.">ਸੁਭਾਵਿਕ ਪੰਜਾਬੀ ਨਾਲ English ਸਹਾਇਤਾ—ਜਦੋਂ ਤੁਹਾਨੂੰ ਲੋੜ ਹੋਵੇ।</p>
         </article>
         <article class="feature reveal">
           <span class="feature-number">02</span>
           <div class="feature-icon" aria-hidden="true">✦</div>
-          <h3 lang="pa">ਛੋਟੇ, ਸਪਸ਼ਟ ਪਾਠ</h3>
-          <p lang="pa">ਗੁਰੂ ਸਾਹਿਬਾਨ, ਗੁਰਬਾਣੀ, ਇਤਿਹਾਸ, ਰਹਿਤ ਅਤੇ ਵਿਰਸੇ ਬਾਰੇ ਕੇਂਦਰਿਤ ਸਿੱਖਿਆ।</p>
-          <small lang="en">Focused lessons across Gurus, Gurbani, history, Rehat and heritage.</small>
+          <h3 data-pa="ਛੋਟੇ, ਸਪਸ਼ਟ ਪਾਠ" data-en="Short, clear lessons">ਛੋਟੇ, ਸਪਸ਼ਟ ਪਾਠ</h3>
+          <p data-pa="ਗੁਰੂ ਸਾਹਿਬਾਨ, ਗੁਰਬਾਣੀ, ਇਤਿਹਾਸ, ਰਹਿਤ ਅਤੇ ਵਿਰਸੇ ਬਾਰੇ ਕੇਂਦਰਿਤ ਸਿੱਖਿਆ।" data-en="Focused lessons across Gurus, Gurbani, history, Rehat and heritage.">ਗੁਰੂ ਸਾਹਿਬਾਨ, ਗੁਰਬਾਣੀ, ਇਤਿਹਾਸ, ਰਹਿਤ ਅਤੇ ਵਿਰਸੇ ਬਾਰੇ ਕੇਂਦਰਿਤ ਸਿੱਖਿਆ।</p>
         </article>
         <article class="feature reveal">
           <span class="feature-number">03</span>
           <div class="feature-icon" aria-hidden="true">✓</div>
-          <h3 lang="pa">ਸਿੱਖੋ, ਫਿਰ ਪਰਖੋ</h3>
-          <p lang="pa">ਹਰ ਪਾਠ ਤੋਂ ਬਾਅਦ ਕੁਇਜ਼ ਨਾਲ ਆਪਣੀ ਸਮਝ ਮਜ਼ਬੂਤ ਕਰੋ।</p>
-          <small lang="en">Strengthen understanding with a quiz after each lesson.</small>
+          <h3 data-pa="ਸਿੱਖੋ, ਫਿਰ ਪਰਖੋ" data-en="Learn, then test yourself">ਸਿੱਖੋ, ਫਿਰ ਪਰਖੋ</h3>
+          <p data-pa="ਹਰ ਪਾਠ ਤੋਂ ਬਾਅਦ ਕੁਇਜ਼ ਨਾਲ ਆਪਣੀ ਸਮਝ ਮਜ਼ਬੂਤ ਕਰੋ।" data-en="Strengthen understanding with a quiz after each lesson.">ਹਰ ਪਾਠ ਤੋਂ ਬਾਅਦ ਕੁਇਜ਼ ਨਾਲ ਆਪਣੀ ਸਮਝ ਮਜ਼ਬੂਤ ਕਰੋ।</p>
         </article>
       </div>
     </section>
 
     <section class="journey section">
       <div class="journey-copy reveal">
-        <div class="section-kicker"><span>02</span><i></i><small>ਸਫ਼ਰ · YOUR JOURNEY</small></div>
-        <h2 lang="pa">ਸਿਰਫ਼ ਜਾਣਕਾਰੀ ਨਹੀਂ—<em>ਸਮਝ ਦਾ ਸਫ਼ਰ</em></h2>
-        <p lang="pa">ਆਪਣਾ ਵਿਸ਼ਾ ਚੁਣੋ, ਛੋਟਾ ਪਾਠ ਪੜ੍ਹੋ, ਫਿਰ ਕੁਇਜ਼ ਨਾਲ ਯਾਦ ਪੱਕੀ ਕਰੋ। ਤੁਹਾਡੀ ਆਮ ਸਿੱਖਿਆ ਅਤੇ ਅਭਿਆਸ ਡਿਵਾਈਸ ਉੱਤੇ ਹੀ ਰਹਿੰਦਾ ਹੈ।</p>
-        <p class="translation" lang="en">Choose a subject, read a short lesson, then reinforce it with a quiz. Everyday learning and practice stay on your device.</p>
+        <div class="section-kicker"><span>02</span><i></i><small data-pa="ਸਫ਼ਰ" data-en="YOUR JOURNEY">ਸਫ਼ਰ</small></div>
+        <h2 data-html data-pa="ਸਿਰਫ਼ ਜਾਣਕਾਰੀ ਨਹੀਂ—<em>ਸਮਝ ਦਾ ਸਫ਼ਰ</em>" data-en="More than facts—<em>a journey of understanding</em>">ਸਿਰਫ਼ ਜਾਣਕਾਰੀ ਨਹੀਂ—<em>ਸਮਝ ਦਾ ਸਫ਼ਰ</em></h2>
+        <p data-pa="ਆਪਣਾ ਵਿਸ਼ਾ ਚੁਣੋ, ਛੋਟਾ ਪਾਠ ਪੜ੍ਹੋ, ਫਿਰ ਕੁਇਜ਼ ਨਾਲ ਯਾਦ ਪੱਕੀ ਕਰੋ। ਤੁਹਾਡੀ ਆਮ ਸਿੱਖਿਆ ਅਤੇ ਅਭਿਆਸ ਡਿਵਾਈਸ ਉੱਤੇ ਹੀ ਰਹਿੰਦਾ ਹੈ।" data-en="Choose a subject, read a short lesson, then reinforce it with a quiz. Everyday learning and practice stay on your device.">ਆਪਣਾ ਵਿਸ਼ਾ ਚੁਣੋ, ਛੋਟਾ ਪਾਠ ਪੜ੍ਹੋ, ਫਿਰ ਕੁਇਜ਼ ਨਾਲ ਯਾਦ ਪੱਕੀ ਕਰੋ। ਤੁਹਾਡੀ ਆਮ ਸਿੱਖਿਆ ਅਤੇ ਅਭਿਆਸ ਡਿਵਾਈਸ ਉੱਤੇ ਹੀ ਰਹਿੰਦਾ ਹੈ।</p>
         <ol>
-          <li><b>01</b><span><strong>ਵਿਸ਼ਾ ਖੋਜੋ</strong><small>Choose a subject</small></span></li>
-          <li><b>02</b><span><strong>ਛੋਟਾ ਪਾਠ ਪੜ੍ਹੋ</strong><small>Learn in a few focused minutes</small></span></li>
-          <li><b>03</b><span><strong>ਕੁਇਜ਼ ਨਾਲ ਪਰਖੋ</strong><small>Check and strengthen understanding</small></span></li>
+          <li><b>01</b><span><strong data-pa="ਵਿਸ਼ਾ ਖੋਜੋ" data-en="Choose a subject">ਵਿਸ਼ਾ ਖੋਜੋ</strong></span></li>
+          <li><b>02</b><span><strong data-pa="ਛੋਟਾ ਪਾਠ ਪੜ੍ਹੋ" data-en="Learn in a few focused minutes">ਛੋਟਾ ਪਾਠ ਪੜ੍ਹੋ</strong></span></li>
+          <li><b>03</b><span><strong data-pa="ਕੁਇਜ਼ ਨਾਲ ਪਰਖੋ" data-en="Check and strengthen understanding">ਕੁਇਜ਼ ਨਾਲ ਪਰਖੋ</strong></span></li>
         </ol>
       </div>
       <div class="lesson-preview reveal" aria-label="Example lesson card">
-        <div class="lesson-top"><span>3 ਮਿੰਟ</span><small>FOUNDATION</small></div>
+        <div class="lesson-top"><span data-pa="3 ਮਿੰਟ" data-en="3 MINUTES">3 ਮਿੰਟ</span><small>FOUNDATION</small></div>
         <div class="lesson-symbol" aria-hidden="true">ੴ</div>
-        <p>ਗੁਰਬਾਣੀ ਅਤੇ ਗੁਰਮਤਿ</p>
-        <h3>ਗੁਰੂ ਗ੍ਰੰਥ ਸਾਹਿਬ ਜੀ ਦਾ ਆਰੰਭ</h3>
-        <small>The opening of Guru Granth Sahib Ji</small>
+        <p data-pa="ਗੁਰਬਾਣੀ ਅਤੇ ਗੁਰਮਤਿ" data-en="GURBANI &amp; GURMAT">ਗੁਰਬਾਣੀ ਅਤੇ ਗੁਰਮਤਿ</p>
+        <h3 data-pa="ਗੁਰੂ ਗ੍ਰੰਥ ਸਾਹਿਬ ਜੀ ਦਾ ਆਰੰਭ" data-en="The opening of Guru Granth Sahib Ji">ਗੁਰੂ ਗ੍ਰੰਥ ਸਾਹਿਬ ਜੀ ਦਾ ਆਰੰਭ</h3>
         <div class="lesson-progress"><i></i><i></i><i></i><i></i><i></i></div>
-        <button type="button" data-scroll="#quiz">ਪਾਠ ਤੋਂ ਕੁਇਜ਼ ਵੱਲ <span>TRY A QUESTION →</span></button>
+        <button type="button" data-scroll="#quiz"><b data-pa="ਪਾਠ ਤੋਂ ਕੁਇਜ਼ ਵੱਲ" data-en="TRY A QUESTION →">ਪਾਠ ਤੋਂ ਕੁਇਜ਼ ਵੱਲ</b></button>
       </div>
     </section>
 
     <section class="quiz-section section" id="quiz">
       <div class="quiz-intro reveal">
-        <div class="section-kicker"><span>03</span><i></i><small>ਆਪਣੀ ਪਰਖ ਕਰੋ · TEST YOURSELF</small></div>
-        <h2 lang="pa">5 ਸਵਾਲ।<br><em>ਤੁਸੀਂ ਕਿੰਨੇ ਜਾਣਦੇ ਹੋ?</em></h2>
-        <p lang="pa">ਐਪ ਦੇ ਅਸਲ ਸਿੱਖਣ ਵਾਲੇ ਵਿਸ਼ਿਆਂ ਵਿੱਚੋਂ ਇੱਕ ਛੋਟਾ ਜਿਹਾ ਕੁਇਜ਼। ਕੋਈ ਖਾਤਾ ਨਹੀਂ ਚਾਹੀਦਾ।</p>
-        <p class="translation" lang="en">A quick taste of the real learning topics in the app. No account needed.</p>
-        <div class="quiz-facts"><span>5 ਸਵਾਲ <small>Questions</small></span><span>ਲਗਭਗ 2 ਮਿੰਟ <small>About 2 minutes</small></span></div>
+        <div class="section-kicker"><span>03</span><i></i><small data-pa="ਆਪਣੀ ਪਰਖ ਕਰੋ" data-en="TEST YOURSELF">ਆਪਣੀ ਪਰਖ ਕਰੋ</small></div>
+        <h2 data-html data-pa="5 ਸਵਾਲ।<br><em>ਤੁਸੀਂ ਕਿੰਨੇ ਜਾਣਦੇ ਹੋ?</em>" data-en="5 questions.<br><em>How many do you know?</em>">5 ਸਵਾਲ।<br><em>ਤੁਸੀਂ ਕਿੰਨੇ ਜਾਣਦੇ ਹੋ?</em></h2>
+        <p data-pa="ਐਪ ਦੇ ਅਸਲ ਸਿੱਖਣ ਵਾਲੇ ਵਿਸ਼ਿਆਂ ਵਿੱਚੋਂ ਇੱਕ ਛੋਟਾ ਜਿਹਾ ਕੁਇਜ਼। ਕੋਈ ਖਾਤਾ ਨਹੀਂ ਚਾਹੀਦਾ।" data-en="A quick taste of the real learning topics in the app. No account needed.">ਐਪ ਦੇ ਅਸਲ ਸਿੱਖਣ ਵਾਲੇ ਵਿਸ਼ਿਆਂ ਵਿੱਚੋਂ ਇੱਕ ਛੋਟਾ ਜਿਹਾ ਕੁਇਜ਼। ਕੋਈ ਖਾਤਾ ਨਹੀਂ ਚਾਹੀਦਾ।</p>
+        <div class="quiz-facts"><span data-pa="5 ਸਵਾਲ" data-en="5 questions">5 ਸਵਾਲ</span><span data-pa="ਲਗਭਗ 2 ਮਿੰਟ" data-en="About 2 minutes">ਲਗਭਗ 2 ਮਿੰਟ</span></div>
       </div>
       <div class="quiz-shell reveal" aria-live="polite">
         <div class="quiz-header">
@@ -155,45 +159,44 @@
     <section class="register section" id="register">
       <div class="register-panel reveal">
         <div class="register-copy">
-          <span class="eyebrow"><i></i><span lang="pa">ਲਾਂਚ ਸੂਚੀ</span><small lang="en">LAUNCH LIST</small></span>
-          <h2 lang="pa">ਐਪ ਤਿਆਰ ਹੋਵੇ,<br><em>ਸਭ ਤੋਂ ਪਹਿਲਾਂ ਜਾਣੋ।</em></h2>
-          <p lang="pa">ਸਿੱਖੀ ਖੋਜ App Store ਅਤੇ Play Store ਉੱਤੇ ਆਉਣ ਵੇਲੇ ਇੱਕ ਵਾਰ ਸੂਚਨਾ ਲਵੋ।</p>
-          <p class="translation" lang="en">Get a launch alert when Sikhi Khoj arrives on the App Store and Play Store.</p>
+          <span class="eyebrow"><i></i><span data-pa="ਲਾਂਚ ਸੂਚੀ" data-en="LAUNCH LIST">ਲਾਂਚ ਸੂਚੀ</span></span>
+          <h2 data-html data-pa="ਐਪ ਤਿਆਰ ਹੋਵੇ,<br><em>ਸਭ ਤੋਂ ਪਹਿਲਾਂ ਜਾਣੋ।</em>" data-en="Be among the first<br><em>to know when we launch.</em>">ਐਪ ਤਿਆਰ ਹੋਵੇ,<br><em>ਸਭ ਤੋਂ ਪਹਿਲਾਂ ਜਾਣੋ।</em></h2>
+          <p data-pa="ਸਿੱਖੀ ਖੋਜ App Store ਅਤੇ Play Store ਉੱਤੇ ਆਉਣ ਵੇਲੇ ਇੱਕ ਵਾਰ ਸੂਚਨਾ ਲਵੋ।" data-en="Get a launch alert when Sikhi Khoj arrives on the App Store and Play Store.">ਸਿੱਖੀ ਖੋਜ App Store ਅਤੇ Play Store ਉੱਤੇ ਆਉਣ ਵੇਲੇ ਇੱਕ ਵਾਰ ਸੂਚਨਾ ਲਵੋ।</p>
           <ul>
-            <li>✓ ਕੋਈ spam ਨਹੀਂ <small>No spam</small></li>
-            <li>✓ ਆਪਣੀ ਪਸੰਦ ਦਾ ਤਰੀਕਾ <small>Choose email, WhatsApp, or both</small></li>
-            <li>✓ ਕਦੇ ਵੀ ਹਟਣ ਦੀ ਬੇਨਤੀ ਕਰੋ <small>Request removal any time</small></li>
+            <li data-pa="✓ ਕੋਈ spam ਨਹੀਂ" data-en="✓ No spam">✓ ਕੋਈ spam ਨਹੀਂ</li>
+            <li data-pa="✓ ਆਪਣੀ ਪਸੰਦ ਦਾ ਤਰੀਕਾ" data-en="✓ Choose email, WhatsApp, or both">✓ ਆਪਣੀ ਪਸੰਦ ਦਾ ਤਰੀਕਾ</li>
+            <li data-pa="✓ ਕਦੇ ਵੀ ਹਟਣ ਦੀ ਬੇਨਤੀ ਕਰੋ" data-en="✓ Request removal any time">✓ ਕਦੇ ਵੀ ਹਟਣ ਦੀ ਬੇਨਤੀ ਕਰੋ</li>
           </ul>
         </div>
         <form id="registration-form" novalidate>
           <div class="form-status" id="form-status" role="status" aria-live="polite"></div>
           <label>
-            <span>ਤੁਹਾਡਾ ਨਾਮ <small>Your name</small></span>
-            <input name="name" autocomplete="name" maxlength="80" required placeholder="ਨਾਮ / Name">
+            <span data-pa="ਤੁਹਾਡਾ ਨਾਮ" data-en="Your name">ਤੁਹਾਡਾ ਨਾਮ</span>
+            <input name="name" autocomplete="name" maxlength="80" required placeholder="ਨਾਮ" data-placeholder-pa="ਨਾਮ" data-placeholder-en="Name">
           </label>
           <div class="form-row">
             <label>
-              <span>ਈਮੇਲ <small>Email</small></span>
+              <span data-pa="ਈਮੇਲ" data-en="Email">ਈਮੇਲ</span>
               <input name="email" type="email" autocomplete="email" maxlength="160" placeholder="you@example.com">
             </label>
             <label>
-              <span>WhatsApp ਨੰਬਰ <small>WhatsApp number</small></span>
+              <span data-pa="WhatsApp ਨੰਬਰ" data-en="WhatsApp number">WhatsApp ਨੰਬਰ</span>
               <input name="phone" type="tel" autocomplete="tel" inputmode="tel" maxlength="24" placeholder="+91 …">
             </label>
           </div>
           <fieldset>
-            <legend>ਸੂਚਨਾ ਕਿਵੇਂ ਲੈਣੀ ਹੈ? <small>How should we notify you?</small></legend>
-            <label class="choice"><input name="notifyEmail" type="checkbox"><span>ਈਮੇਲ <small>Email</small></span></label>
+            <legend data-pa="ਸੂਚਨਾ ਕਿਵੇਂ ਲੈਣੀ ਹੈ?" data-en="How should we notify you?">ਸੂਚਨਾ ਕਿਵੇਂ ਲੈਣੀ ਹੈ?</legend>
+            <label class="choice"><input name="notifyEmail" type="checkbox"><span data-pa="ਈਮੇਲ" data-en="Email">ਈਮੇਲ</span></label>
             <label class="choice"><input name="notifyWhatsApp" type="checkbox"><span>WhatsApp</span></label>
           </fieldset>
           <label class="consent">
             <input name="consent" type="checkbox" required>
-            <span>ਮੈਂ ਸਿੱਖੀ ਖੋਜ ਦੇ ਲਾਂਚ ਬਾਰੇ ਮੇਰੀ ਚੁਣੀ ਵਿਧੀ ਰਾਹੀਂ ਸੁਨੇਹਾ ਲੈਣ ਲਈ ਸਹਿਮਤ ਹਾਂ। <small>I consent to receive Sikhi Khoj launch updates through my selected method. My details will be used only for these updates.</small></span>
+            <span data-pa="ਮੈਂ ਸਿੱਖੀ ਖੋਜ ਦੇ ਲਾਂਚ ਬਾਰੇ ਮੇਰੀ ਚੁਣੀ ਵਿਧੀ ਰਾਹੀਂ ਸੁਨੇਹਾ ਲੈਣ ਲਈ ਸਹਿਮਤ ਹਾਂ। ਮੇਰੀ ਜਾਣਕਾਰੀ ਸਿਰਫ਼ ਇਨ੍ਹਾਂ ਸੂਚਨਾਵਾਂ ਲਈ ਵਰਤੀ ਜਾਵੇਗੀ।" data-en="I consent to receive Sikhi Khoj launch updates through my selected method. My details will be used only for these updates.">ਮੈਂ ਸਿੱਖੀ ਖੋਜ ਦੇ ਲਾਂਚ ਬਾਰੇ ਮੇਰੀ ਚੁਣੀ ਵਿਧੀ ਰਾਹੀਂ ਸੁਨੇਹਾ ਲੈਣ ਲਈ ਸਹਿਮਤ ਹਾਂ।</span>
           </label>
           <label class="honeypot" aria-hidden="true">Website<input name="website" tabindex="-1" autocomplete="off"></label>
           <input name="startedAt" type="hidden">
-          <button class="button button-primary submit-button" type="submit"><span>ਮੈਨੂੰ ਸੂਚਿਤ ਕਰੋ</span><small>NOTIFY ME AT LAUNCH</small></button>
-          <p class="privacy-note">ਤੁਹਾਡੀ ਜਾਣਕਾਰੀ ਵੇਚੀ ਜਾਂ ਸਾਂਝੀ ਨਹੀਂ ਕੀਤੀ ਜਾਵੇਗੀ। ਮਦਦ ਜਾਂ ਹਟਾਉਣ ਲਈ <a href="mailto:contact@brainforgegames.com">contact@brainforgegames.com</a>।<small>We do not sell or share your contact details. Contact us to update or remove them.</small></p>
+          <button class="button button-primary submit-button" type="submit"><span data-pa="ਮੈਨੂੰ ਸੂਚਿਤ ਕਰੋ" data-en="NOTIFY ME AT LAUNCH">ਮੈਨੂੰ ਸੂਚਿਤ ਕਰੋ</span><small aria-hidden="true"></small></button>
+          <p class="privacy-note"><span data-pa="ਤੁਹਾਡੀ ਜਾਣਕਾਰੀ ਵੇਚੀ ਜਾਂ ਸਾਂਝੀ ਨਹੀਂ ਕੀਤੀ ਜਾਵੇਗੀ। ਮਦਦ ਜਾਂ ਹਟਾਉਣ ਲਈ ਸਾਨੂੰ ਲਿਖੋ:" data-en="We do not sell or share your contact details. Contact us to update or remove them:">ਤੁਹਾਡੀ ਜਾਣਕਾਰੀ ਵੇਚੀ ਜਾਂ ਸਾਂਝੀ ਨਹੀਂ ਕੀਤੀ ਜਾਵੇਗੀ। ਮਦਦ ਜਾਂ ਹਟਾਉਣ ਲਈ ਸਾਨੂੰ ਲਿਖੋ:</span> <a href="mailto:contact@brainforgegames.com">contact@brainforgegames.com</a></p>
         </form>
       </div>
     </section>
@@ -204,7 +207,7 @@
       <img src="assets/images/app-icon.webp" alt="" width="44" height="44">
       <span><b>ਸਿੱਖੀ ਖੋਜ</b><small>SIKHI KHOJ</small></span>
     </a>
-    <p><span lang="pa">ਸਤਿਕਾਰ ਨਾਲ ਸਿੱਖਣ ਅਤੇ ਖੋਜਣ ਲਈ।</span><small lang="en">Made for respectful learning and discovery.</small></p>
+    <p><span data-pa="ਸਤਿਕਾਰ ਨਾਲ ਸਿੱਖਣ ਅਤੇ ਖੋਜਣ ਲਈ।" data-en="Made for respectful learning and discovery.">ਸਤਿਕਾਰ ਨਾਲ ਸਿੱਖਣ ਅਤੇ ਖੋਜਣ ਲਈ।</span></p>
     <div><a href="mailto:contact@brainforgegames.com">contact@brainforgegames.com</a><span>© <span id="year"></span> BrainForge Games</span></div>
   </footer>
 </body>

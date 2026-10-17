@@ -48,6 +48,57 @@ const QUIZ = Object.freeze([
   }
 ]);
 
+const LANGUAGE_KEY = 'sikhi-khoj-language';
+const languageGate = document.querySelector('#language-gate');
+const languageSwitch = document.querySelector('#language-switch');
+let activeLanguage = 'pa';
+
+function savedLanguage() {
+  try {
+    const value = localStorage.getItem(LANGUAGE_KEY);
+    return value === 'pa' || value === 'en' ? value : null;
+  } catch {
+    return null;
+  }
+}
+
+function copy(pair) {
+  return pair[activeLanguage === 'pa' ? 0 : 1];
+}
+
+function applyLanguage(language, persist = true) {
+  activeLanguage = language === 'en' ? 'en' : 'pa';
+  document.documentElement.lang = activeLanguage;
+  document.documentElement.dataset.language = activeLanguage;
+  document.querySelectorAll('[data-pa][data-en]').forEach(element => {
+    const value = element.dataset[activeLanguage];
+    if (element.hasAttribute('data-html')) element.innerHTML = value;
+    else element.textContent = value;
+  });
+  document.querySelectorAll('[data-placeholder-pa][data-placeholder-en]').forEach(element => {
+    element.placeholder = element.dataset[`placeholder${activeLanguage === 'pa' ? 'Pa' : 'En'}`];
+  });
+  languageSwitch.querySelector('span').textContent = activeLanguage === 'pa' ? 'ਪੰ' : 'EN';
+  languageSwitch.querySelector('small').textContent = activeLanguage === 'pa' ? 'EN' : 'ਪੰ';
+  languageSwitch.setAttribute('aria-label', activeLanguage === 'pa' ? 'ਭਾਸ਼ਾ ਬਦਲੋ' : 'Change language');
+  if (persist) {
+    try { localStorage.setItem(LANGUAGE_KEY, activeLanguage); } catch { /* Storage may be unavailable. */ }
+  }
+  languageGate.classList.remove('is-open');
+  languageGate.setAttribute('aria-hidden', 'true');
+  renderQuestion();
+}
+
+document.querySelectorAll('[data-language-choice]').forEach(button => button.addEventListener('click', () => {
+  applyLanguage(button.dataset.languageChoice);
+}));
+
+languageSwitch.addEventListener('click', () => {
+  languageGate.classList.add('is-open');
+  languageGate.removeAttribute('aria-hidden');
+  languageGate.querySelector(`[data-language-choice="${activeLanguage}"]`).focus();
+});
+
 let current = 0;
 let score = 0;
 let answered = false;
@@ -60,19 +111,18 @@ const resetButton = document.querySelector('#quiz-reset');
 function renderQuestion() {
   answered = false;
   const item = QUIZ[current];
-  counter.textContent = `ਸਵਾਲ ${current + 1} / ${QUIZ.length}`;
+  counter.textContent = activeLanguage === 'pa' ? `ਸਵਾਲ ${current + 1} / ${QUIZ.length}` : `QUESTION ${current + 1} / ${QUIZ.length}`;
   bar.style.width = `${((current + 1) / QUIZ.length) * 100}%`;
   resetButton.hidden = true;
   card.innerHTML = `
     <div class="question-card">
-      <span class="question-topic">${item.topic[0]} · ${item.topic[1]}</span>
-      <h3>${item.question[0]}</h3>
-      <p class="question-en">${item.question[1]}</p>
+      <span class="question-topic">${copy(item.topic)}</span>
+      <h3>${copy(item.question)}</h3>
       <div class="options">
         ${item.options.map((option, index) => `
           <button class="option" type="button" data-option="${index}">
             <span class="option-letter">${String.fromCharCode(65 + index)}</span>
-            <strong>${option[0]}</strong><small>${option[1]}</small>
+            <strong>${copy(option)}</strong>
           </button>`).join('')}
       </div>
       <div id="quiz-feedback"></div>
@@ -94,12 +144,11 @@ function chooseAnswer(event) {
   const correct = selected === item.answer;
   document.querySelector('#quiz-feedback').innerHTML = `
     <div class="feedback">
-      <b>${correct ? '✓ ਬਿਲਕੁਲ ਠੀਕ! · Correct' : 'ਸਹੀ ਜਵਾਬ ਵੇਖੋ · Learn this one'}</b>
-      <p>${item.explanation[0]}<small>${item.explanation[1]}</small></p>
+      <b>${correct ? (activeLanguage === 'pa' ? '✓ ਬਿਲਕੁਲ ਠੀਕ!' : '✓ Correct!') : (activeLanguage === 'pa' ? 'ਸਹੀ ਜਵਾਬ ਵੇਖੋ' : 'Learn this one')}</b>
+      <p>${copy(item.explanation)}</p>
     </div>
     <button class="button button-primary next-question" type="button">
-      <span>${current === QUIZ.length - 1 ? 'ਨਤੀਜਾ ਵੇਖੋ' : 'ਅਗਲਾ ਸਵਾਲ'}</span>
-      <small>${current === QUIZ.length - 1 ? 'SEE MY RESULT' : 'NEXT QUESTION'}</small>
+      <span>${current === QUIZ.length - 1 ? (activeLanguage === 'pa' ? 'ਨਤੀਜਾ ਵੇਖੋ' : 'SEE MY RESULT') : (activeLanguage === 'pa' ? 'ਅਗਲਾ ਸਵਾਲ' : 'NEXT QUESTION')}</span>
     </button>`;
   document.querySelector('.next-question').addEventListener('click', nextQuestion);
 }
@@ -115,7 +164,7 @@ function nextQuestion() {
 }
 
 function renderResult() {
-  counter.textContent = 'ਕੁਇਜ਼ ਪੂਰਾ · QUIZ COMPLETE';
+  counter.textContent = activeLanguage === 'pa' ? 'ਕੁਇਜ਼ ਪੂਰਾ' : 'QUIZ COMPLETE';
   bar.style.width = '100%';
   resetButton.hidden = false;
   const message = score === 5
@@ -125,10 +174,9 @@ function renderResult() {
       : ['ਹਰ ਸਵਾਲ ਇੱਕ ਨਵੀਂ ਖੋਜ ਹੈ।', 'Every question is a new discovery.'];
   card.innerHTML = `
     <div class="result-card">
-      <div class="result-ring"><div><strong>${score}/${QUIZ.length}</strong><span>ਤੁਹਾਡਾ ਸਕੋਰ · YOUR SCORE</span></div></div>
-      <h3>${message[0]}</h3>
-      <p>${message[1]}</p>
-      <a class="button button-primary" href="#register"><span>ਲਾਂਚ ਦੀ ਸੂਚਨਾ ਲਵੋ</span><small>JOIN THE LAUNCH LIST</small></a>
+      <div class="result-ring"><div><strong>${score}/${QUIZ.length}</strong><span>${activeLanguage === 'pa' ? 'ਤੁਹਾਡਾ ਸਕੋਰ' : 'YOUR SCORE'}</span></div></div>
+      <h3>${copy(message)}</h3>
+      <a class="button button-primary" href="#register"><span>${activeLanguage === 'pa' ? 'ਲਾਂਚ ਦੀ ਸੂਚਨਾ ਲਵੋ' : 'JOIN THE LAUNCH LIST'}</span></a>
     </div>`;
 }
 
@@ -146,9 +194,9 @@ const status = document.querySelector('#form-status');
 const submit = form.querySelector('button[type="submit"]');
 form.elements.startedAt.value = String(Date.now());
 
-function showStatus(type, pa, en) {
+function showStatus(type, message) {
   status.className = `form-status ${type}`;
-  status.innerHTML = `<b>${pa}</b><small>${en}</small>`;
+  status.innerHTML = `<b>${message}</b>`;
   status.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
 }
 
@@ -163,15 +211,14 @@ form.addEventListener('submit', async event => {
   const notifyWhatsApp = data.get('notifyWhatsApp') === 'on';
   const consent = data.get('consent') === 'on';
 
-  if (name.length < 2) return showStatus('error', 'ਕਿਰਪਾ ਕਰਕੇ ਆਪਣਾ ਨਾਮ ਲਿਖੋ।', 'Please enter your name.');
-  if (!notifyEmail && !notifyWhatsApp) return showStatus('error', 'ਈਮੇਲ ਜਾਂ WhatsApp ਵਿੱਚੋਂ ਘੱਟੋ-ਘੱਟ ਇੱਕ ਚੁਣੋ।', 'Choose at least one notification method.');
-  if (notifyEmail && !email) return showStatus('error', 'ਈਮੇਲ ਸੂਚਨਾ ਲਈ ਆਪਣੀ ਈਮੇਲ ਲਿਖੋ।', 'Enter an email address for email updates.');
-  if (notifyWhatsApp && !phone) return showStatus('error', 'WhatsApp ਸੂਚਨਾ ਲਈ ਆਪਣਾ ਨੰਬਰ ਲਿਖੋ।', 'Enter a phone number for WhatsApp updates.');
-  if (!consent) return showStatus('error', 'ਜਾਰੀ ਰੱਖਣ ਲਈ ਸਹਿਮਤੀ ਲੋੜੀਂਦੀ ਹੈ।', 'Consent is required to continue.');
+  if (name.length < 2) return showStatus('error', copy(['ਕਿਰਪਾ ਕਰਕੇ ਆਪਣਾ ਨਾਮ ਲਿਖੋ।', 'Please enter your name.']));
+  if (!notifyEmail && !notifyWhatsApp) return showStatus('error', copy(['ਈਮੇਲ ਜਾਂ WhatsApp ਵਿੱਚੋਂ ਘੱਟੋ-ਘੱਟ ਇੱਕ ਚੁਣੋ।', 'Choose at least one notification method.']));
+  if (notifyEmail && !email) return showStatus('error', copy(['ਈਮੇਲ ਸੂਚਨਾ ਲਈ ਆਪਣੀ ਈਮੇਲ ਲਿਖੋ।', 'Enter an email address for email updates.']));
+  if (notifyWhatsApp && !phone) return showStatus('error', copy(['WhatsApp ਸੂਚਨਾ ਲਈ ਆਪਣਾ ਨੰਬਰ ਲਿਖੋ।', 'Enter a phone number for WhatsApp updates.']));
+  if (!consent) return showStatus('error', copy(['ਜਾਰੀ ਰੱਖਣ ਲਈ ਸਹਿਮਤੀ ਲੋੜੀਂਦੀ ਹੈ।', 'Consent is required to continue.']));
 
   submit.disabled = true;
-  submit.querySelector('span').textContent = 'ਭੇਜਿਆ ਜਾ ਰਿਹਾ ਹੈ…';
-  submit.querySelector('small').textContent = 'SENDING…';
+  submit.querySelector('span').textContent = activeLanguage === 'pa' ? 'ਭੇਜਿਆ ਜਾ ਰਿਹਾ ਹੈ…' : 'SENDING…';
   try {
     const response = await fetch(window.SIKHI_KHOJ_CONFIG.registrationEndpoint, {
       method: 'POST',
@@ -180,23 +227,28 @@ form.addEventListener('submit', async event => {
         name, email, phone, notifyEmail, notifyWhatsApp, consent,
         website: String(data.get('website') || ''),
         startedAt: Number(data.get('startedAt')),
-        language: navigator.language || 'unknown',
+        language: activeLanguage,
         source: 'prelaunch-site'
       })
     });
     const result = await response.json().catch(() => ({}));
     if (!response.ok) throw new Error(result.message || 'Registration failed');
-    showStatus('success', result.duplicate ? 'ਤੁਸੀਂ ਪਹਿਲਾਂ ਹੀ ਸੂਚੀ ਵਿੱਚ ਹੋ। ਧੰਨਵਾਦ!' : 'ਧੰਨਵਾਦ! ਲਾਂਚ ਵੇਲੇ ਅਸੀਂ ਤੁਹਾਨੂੰ ਸੂਚਿਤ ਕਰਾਂਗੇ।', result.duplicate ? 'You are already on the list. Thank you!' : 'Thank you! We’ll notify you when Sikhi Khoj launches.');
+    showStatus('success', copy(result.duplicate ? ['ਤੁਸੀਂ ਪਹਿਲਾਂ ਹੀ ਸੂਚੀ ਵਿੱਚ ਹੋ। ਧੰਨਵਾਦ!', 'You are already on the list. Thank you!'] : ['ਧੰਨਵਾਦ! ਲਾਂਚ ਵੇਲੇ ਅਸੀਂ ਤੁਹਾਨੂੰ ਸੂਚਿਤ ਕਰਾਂਗੇ।', 'Thank you! We’ll notify you when Sikhi Khoj launches.']));
     form.reset();
     form.elements.startedAt.value = String(Date.now());
   } catch {
-    showStatus('error', 'ਹੁਣੇ ਰਜਿਸਟ੍ਰੇਸ਼ਨ ਨਹੀਂ ਹੋ ਸਕੀ। ਕਿਰਪਾ ਕਰਕੇ ਕੁਝ ਸਮੇਂ ਬਾਅਦ ਕੋਸ਼ਿਸ਼ ਕਰੋ।', `We could not register you just now. Please try again, or email ${window.SIKHI_KHOJ_CONFIG.contactEmail}.`);
+    showStatus('error', copy(['ਹੁਣੇ ਰਜਿਸਟ੍ਰੇਸ਼ਨ ਨਹੀਂ ਹੋ ਸਕੀ। ਕਿਰਪਾ ਕਰਕੇ ਕੁਝ ਸਮੇਂ ਬਾਅਦ ਕੋਸ਼ਿਸ਼ ਕਰੋ।', `We could not register you just now. Please try again, or email ${window.SIKHI_KHOJ_CONFIG.contactEmail}.`]));
   } finally {
     submit.disabled = false;
-    submit.querySelector('span').textContent = 'ਮੈਨੂੰ ਸੂਚਿਤ ਕਰੋ';
-    submit.querySelector('small').textContent = 'NOTIFY ME AT LAUNCH';
+    submit.querySelector('span').textContent = activeLanguage === 'pa' ? 'ਮੈਨੂੰ ਸੂਚਿਤ ਕਰੋ' : 'NOTIFY ME AT LAUNCH';
   }
 });
 
 document.querySelector('#year').textContent = new Date().getFullYear();
-renderQuestion();
+const initialLanguage = savedLanguage();
+applyLanguage(initialLanguage || 'pa', false);
+if (!initialLanguage) {
+  languageGate.classList.add('is-open');
+  languageGate.removeAttribute('aria-hidden');
+  languageGate.querySelector('[data-language-choice="pa"]').focus();
+}

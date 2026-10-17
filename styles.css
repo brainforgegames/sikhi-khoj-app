@@ -5,7 +5,7 @@
 
 :root{--ink:#080d11;--navy:#0e1a24;--navy-2:#152635;--surface:#14222d;--surface-2:#1d2f3c;--ivory:#f3eee3;--muted:#aebcc4;--gold:#edb45c;--saffron:#d9822b;--teal:#327a70;--line:rgba(237,180,92,.2);--shadow:0 30px 80px rgba(0,0,0,.45);color-scheme:dark}
 *{box-sizing:border-box}
-html{scroll-behavior:smooth;scroll-padding-top:90px;background:var(--ink)}
+html{scroll-behavior:smooth;scroll-padding-top:90px;background:var(--ink);overflow-x:hidden}
 body{margin:0;background:var(--ink);color:var(--ivory);font-family:NotoGurmukhi,NotoSans,sans-serif;line-height:1.55;overflow-x:hidden}
 button,input{font:inherit}
 a{color:inherit}

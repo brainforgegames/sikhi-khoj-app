@@ -18,9 +18,9 @@ Open `http://localhost:8080`. The production endpoint accepts requests only from
 - `index.html`: visible bilingual copy and `mailto:` links.
 - `app.js`: quiz questions copied from reviewed app content and the form behavior.
 
-The GitHub Pages workflow deploys `Website/` without a build step. The canonical public URL is:
+The website is mirrored to the public `brainforgegames/sikhi-khoj-app` repository because the private Unity repository's account plan does not support GitHub Pages. The public repository deploys the files without a build step. The canonical URL is:
 
-`https://brainforgegames.github.io/Sikhi_Khoj/`
+`https://brainforgegames.github.io/sikhi-khoj-app/`
 
 ## Signup data
 

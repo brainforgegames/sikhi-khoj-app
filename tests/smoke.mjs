@@ -21,8 +21,12 @@ assert.equal((app.match(/\n\s+answer:/g) || []).length, 5, 'every quiz question 
 assert.match(config, /^\s*registrationEndpoint:\s*'https:\/\//m);
 assert.match(config, /^\s*analyticsMeasurementId:\s*'G-[A-Z0-9]+'/m);
 assert.match(html, /<script defer src="analytics\.js"><\/script>/);
-for (const event of ['language_selected', 'quiz_started', 'quiz_completed', 'registration_started', 'registration_submitted', 'sign_up', 'registration_error']) {
+for (const event of ['web_language_selected', 'web_quiz_started', 'web_quiz_completed', 'web_registration_started', 'web_registration_submitted', 'web_registration_success', 'web_registration_error']) {
   assert.match(app, new RegExp(`analytics\\.event\\('${event}'`), `missing analytics event: ${event}`);
+}
+for (const event of [...app.matchAll(/analytics\.event\('([^']+)'/g)].map(match => match[1])) {
+  assert.match(event, /^web_/, `custom website event needs web_ prefix: ${event}`);
+  assert.ok(event.length <= 40, `Analytics event name is too long: ${event}`);
 }
 assert.doesNotMatch(app, /analytics\.event\([^\n]*(?:email|phone|name)\b\s*[,}]/i, 'analytics must not include contact details');
 assert.match(analytics, /allow_ad_personalization_signals:\s*false/);

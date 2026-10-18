@@ -93,7 +93,7 @@ function applyLanguage(language, persist = true) {
 document.querySelectorAll('[data-language-choice]').forEach(button => button.addEventListener('click', () => {
   const selectionContext = savedLanguage() ? 'switcher' : 'initial';
   applyLanguage(button.dataset.languageChoice);
-  analytics.event('language_selected', { language: activeLanguage, selection_context: selectionContext });
+  analytics.event('web_language_selected', { language: activeLanguage, selection_context: selectionContext });
 }));
 
 languageSwitch.addEventListener('click', () => {
@@ -138,7 +138,7 @@ function chooseAnswer(event) {
   if (answered) return;
   if (!quizStarted) {
     quizStarted = true;
-    analytics.event('quiz_started', { language: activeLanguage, question_count: QUIZ.length });
+    analytics.event('web_quiz_started', { language: activeLanguage, question_count: QUIZ.length });
   }
   answered = true;
   const selected = Number(event.currentTarget.dataset.option);
@@ -186,11 +186,11 @@ function renderResult() {
       <h3>${copy(message)}</h3>
       <a class="button button-primary" href="#register"><span>${activeLanguage === 'pa' ? 'ਲਾਂਚ ਦੀ ਸੂਚਨਾ ਲਵੋ' : 'JOIN THE LAUNCH LIST'}</span></a>
     </div>`;
-  analytics.event('quiz_completed', { language: activeLanguage, score, question_count: QUIZ.length });
+  analytics.event('web_quiz_completed', { language: activeLanguage, score, question_count: QUIZ.length });
 }
 
 function resetQuiz() {
-  analytics.event('quiz_restarted', { language: activeLanguage, previous_score: score });
+  analytics.event('web_quiz_restarted', { language: activeLanguage, previous_score: score });
   current = 0;
   score = 0;
   quizStarted = false;
@@ -209,7 +209,7 @@ form.elements.startedAt.value = String(Date.now());
 form.addEventListener('input', () => {
   if (formStarted) return;
   formStarted = true;
-  analytics.event('registration_started', { language: activeLanguage });
+  analytics.event('web_registration_started', { language: activeLanguage });
 }, { once: true });
 
 function showStatus(type, message) {
@@ -231,7 +231,7 @@ form.addEventListener('submit', async event => {
   const notificationMethod = notifyEmail && notifyWhatsApp ? 'email_and_whatsapp' : notifyEmail ? 'email' : notifyWhatsApp ? 'whatsapp' : 'none';
 
   function reject(reason, message) {
-    analytics.event('registration_validation_error', { language: activeLanguage, reason });
+    analytics.event('web_registration_validation_error', { language: activeLanguage, reason });
     showStatus('error', message);
   }
   if (name.length < 2) return reject('name', copy(['ਕਿਰਪਾ ਕਰਕੇ ਆਪਣਾ ਨਾਮ ਲਿਖੋ।', 'Please enter your name.']));
@@ -242,7 +242,7 @@ form.addEventListener('submit', async event => {
 
   submit.disabled = true;
   submit.querySelector('span').textContent = activeLanguage === 'pa' ? 'ਭੇਜਿਆ ਜਾ ਰਿਹਾ ਹੈ…' : 'SENDING…';
-  analytics.event('registration_submitted', { language: activeLanguage, notification_method: notificationMethod });
+  analytics.event('web_registration_submitted', { language: activeLanguage, notification_method: notificationMethod });
   try {
     const response = await fetch(window.SIKHI_KHOJ_CONFIG.registrationEndpoint, {
       method: 'POST',
@@ -257,12 +257,12 @@ form.addEventListener('submit', async event => {
     });
     const result = await response.json().catch(() => ({}));
     if (!response.ok) throw new Error(result.message || 'Registration failed');
-    analytics.event('sign_up', { language: activeLanguage, notification_method: notificationMethod, duplicate: Boolean(result.duplicate) });
+    analytics.event('web_registration_success', { language: activeLanguage, notification_method: notificationMethod, duplicate: Boolean(result.duplicate) });
     showStatus('success', copy(result.duplicate ? ['ਤੁਸੀਂ ਪਹਿਲਾਂ ਹੀ ਸੂਚੀ ਵਿੱਚ ਹੋ। ਧੰਨਵਾਦ!', 'You are already on the list. Thank you!'] : ['ਧੰਨਵਾਦ! ਲਾਂਚ ਵੇਲੇ ਅਸੀਂ ਤੁਹਾਨੂੰ ਸੂਚਿਤ ਕਰਾਂਗੇ।', 'Thank you! We’ll notify you when Sikhi Khoj launches.']));
     form.reset();
     form.elements.startedAt.value = String(Date.now());
   } catch {
-    analytics.event('registration_error', { language: activeLanguage, reason: 'network_or_backend' });
+    analytics.event('web_registration_error', { language: activeLanguage, reason: 'network_or_backend' });
     showStatus('error', copy(['ਹੁਣੇ ਰਜਿਸਟ੍ਰੇਸ਼ਨ ਨਹੀਂ ਹੋ ਸਕੀ। ਕਿਰਪਾ ਕਰਕੇ ਕੁਝ ਸਮੇਂ ਬਾਅਦ ਕੋਸ਼ਿਸ਼ ਕਰੋ।', `We could not register you just now. Please try again, or email ${window.SIKHI_KHOJ_CONFIG.contactEmail}.`]));
   } finally {
     submit.disabled = false;

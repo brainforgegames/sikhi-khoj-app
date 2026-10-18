@@ -19,6 +19,8 @@ Open `http://localhost:8080`. The production endpoint accepts requests only from
 - `index.html`: visible bilingual copy and `mailto:` links.
 - `app.js`: quiz questions copied from reviewed app content and the form behavior.
 
+Custom Analytics event names use the `web_` prefix so website actions are easy to distinguish from Unity app events. Google-managed automatic events such as `page_view`, `session_start` and `user_engagement` keep their standard names.
+
 The website is mirrored to the public `brainforgegames/sikhi-khoj-app` repository because the private Unity repository's account plan does not support GitHub Pages. The public repository deploys the files without a build step. The canonical URL is:
 
 `https://brainforgegames.github.io/sikhi-khoj-app/`

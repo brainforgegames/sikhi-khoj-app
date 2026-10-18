@@ -51,6 +51,7 @@ const QUIZ = Object.freeze([
 const LANGUAGE_KEY = 'sikhi-khoj-language';
 const languageGate = document.querySelector('#language-gate');
 const languageSwitch = document.querySelector('#language-switch');
+const analytics = window.SIKHI_KHOJ_ANALYTICS || { event() {} };
 let activeLanguage = 'pa';
 
 function savedLanguage() {
@@ -90,7 +91,9 @@ function applyLanguage(language, persist = true) {
 }
 
 document.querySelectorAll('[data-language-choice]').forEach(button => button.addEventListener('click', () => {
+  const selectionContext = savedLanguage() ? 'switcher' : 'initial';
   applyLanguage(button.dataset.languageChoice);
+  analytics.event('language_selected', { language: activeLanguage, selection_context: selectionContext });
 }));
 
 languageSwitch.addEventListener('click', () => {
@@ -102,6 +105,7 @@ languageSwitch.addEventListener('click', () => {
 let current = 0;
 let score = 0;
 let answered = false;
+let quizStarted = false;
 
 const card = document.querySelector('#quiz-card');
 const counter = document.querySelector('#quiz-counter');
@@ -132,6 +136,10 @@ function renderQuestion() {
 
 function chooseAnswer(event) {
   if (answered) return;
+  if (!quizStarted) {
+    quizStarted = true;
+    analytics.event('quiz_started', { language: activeLanguage, question_count: QUIZ.length });
+  }
   answered = true;
   const selected = Number(event.currentTarget.dataset.option);
   const item = QUIZ[current];
@@ -178,11 +186,14 @@ function renderResult() {
       <h3>${copy(message)}</h3>
       <a class="button button-primary" href="#register"><span>${activeLanguage === 'pa' ? 'ਲਾਂਚ ਦੀ ਸੂਚਨਾ ਲਵੋ' : 'JOIN THE LAUNCH LIST'}</span></a>
     </div>`;
+  analytics.event('quiz_completed', { language: activeLanguage, score, question_count: QUIZ.length });
 }
 
 function resetQuiz() {
+  analytics.event('quiz_restarted', { language: activeLanguage, previous_score: score });
   current = 0;
   score = 0;
+  quizStarted = false;
   renderQuestion();
 }
 
@@ -192,7 +203,14 @@ document.querySelectorAll('[data-scroll]').forEach(button => button.addEventList
 const form = document.querySelector('#registration-form');
 const status = document.querySelector('#form-status');
 const submit = form.querySelector('button[type="submit"]');
+let formStarted = false;
 form.elements.startedAt.value = String(Date.now());
+
+form.addEventListener('input', () => {
+  if (formStarted) return;
+  formStarted = true;
+  analytics.event('registration_started', { language: activeLanguage });
+}, { once: true });
 
 function showStatus(type, message) {
   status.className = `form-status ${type}`;
@@ -210,15 +228,21 @@ form.addEventListener('submit', async event => {
   const notifyEmail = data.get('notifyEmail') === 'on';
   const notifyWhatsApp = data.get('notifyWhatsApp') === 'on';
   const consent = data.get('consent') === 'on';
+  const notificationMethod = notifyEmail && notifyWhatsApp ? 'email_and_whatsapp' : notifyEmail ? 'email' : notifyWhatsApp ? 'whatsapp' : 'none';
 
-  if (name.length < 2) return showStatus('error', copy(['ਕਿਰਪਾ ਕਰਕੇ ਆਪਣਾ ਨਾਮ ਲਿਖੋ।', 'Please enter your name.']));
-  if (!notifyEmail && !notifyWhatsApp) return showStatus('error', copy(['ਈਮੇਲ ਜਾਂ WhatsApp ਵਿੱਚੋਂ ਘੱਟੋ-ਘੱਟ ਇੱਕ ਚੁਣੋ।', 'Choose at least one notification method.']));
-  if (notifyEmail && !email) return showStatus('error', copy(['ਈਮੇਲ ਸੂਚਨਾ ਲਈ ਆਪਣੀ ਈਮੇਲ ਲਿਖੋ।', 'Enter an email address for email updates.']));
-  if (notifyWhatsApp && !phone) return showStatus('error', copy(['WhatsApp ਸੂਚਨਾ ਲਈ ਆਪਣਾ ਨੰਬਰ ਲਿਖੋ।', 'Enter a phone number for WhatsApp updates.']));
-  if (!consent) return showStatus('error', copy(['ਜਾਰੀ ਰੱਖਣ ਲਈ ਸਹਿਮਤੀ ਲੋੜੀਂਦੀ ਹੈ।', 'Consent is required to continue.']));
+  function reject(reason, message) {
+    analytics.event('registration_validation_error', { language: activeLanguage, reason });
+    showStatus('error', message);
+  }
+  if (name.length < 2) return reject('name', copy(['ਕਿਰਪਾ ਕਰਕੇ ਆਪਣਾ ਨਾਮ ਲਿਖੋ।', 'Please enter your name.']));
+  if (!notifyEmail && !notifyWhatsApp) return reject('notification_method', copy(['ਈਮੇਲ ਜਾਂ WhatsApp ਵਿੱਚੋਂ ਘੱਟੋ-ਘੱਟ ਇੱਕ ਚੁਣੋ।', 'Choose at least one notification method.']));
+  if (notifyEmail && !email) return reject('email', copy(['ਈਮੇਲ ਸੂਚਨਾ ਲਈ ਆਪਣੀ ਈਮੇਲ ਲਿਖੋ।', 'Enter an email address for email updates.']));
+  if (notifyWhatsApp && !phone) return reject('whatsapp', copy(['WhatsApp ਸੂਚਨਾ ਲਈ ਆਪਣਾ ਨੰਬਰ ਲਿਖੋ।', 'Enter a phone number for WhatsApp updates.']));
+  if (!consent) return reject('consent', copy(['ਜਾਰੀ ਰੱਖਣ ਲਈ ਸਹਿਮਤੀ ਲੋੜੀਂਦੀ ਹੈ।', 'Consent is required to continue.']));
 
   submit.disabled = true;
   submit.querySelector('span').textContent = activeLanguage === 'pa' ? 'ਭੇਜਿਆ ਜਾ ਰਿਹਾ ਹੈ…' : 'SENDING…';
+  analytics.event('registration_submitted', { language: activeLanguage, notification_method: notificationMethod });
   try {
     const response = await fetch(window.SIKHI_KHOJ_CONFIG.registrationEndpoint, {
       method: 'POST',
@@ -233,10 +257,12 @@ form.addEventListener('submit', async event => {
     });
     const result = await response.json().catch(() => ({}));
     if (!response.ok) throw new Error(result.message || 'Registration failed');
+    analytics.event('sign_up', { language: activeLanguage, notification_method: notificationMethod, duplicate: Boolean(result.duplicate) });
     showStatus('success', copy(result.duplicate ? ['ਤੁਸੀਂ ਪਹਿਲਾਂ ਹੀ ਸੂਚੀ ਵਿੱਚ ਹੋ। ਧੰਨਵਾਦ!', 'You are already on the list. Thank you!'] : ['ਧੰਨਵਾਦ! ਲਾਂਚ ਵੇਲੇ ਅਸੀਂ ਤੁਹਾਨੂੰ ਸੂਚਿਤ ਕਰਾਂਗੇ।', 'Thank you! We’ll notify you when Sikhi Khoj launches.']));
     form.reset();
     form.elements.startedAt.value = String(Date.now());
   } catch {
+    analytics.event('registration_error', { language: activeLanguage, reason: 'network_or_backend' });
     showStatus('error', copy(['ਹੁਣੇ ਰਜਿਸਟ੍ਰੇਸ਼ਨ ਨਹੀਂ ਹੋ ਸਕੀ। ਕਿਰਪਾ ਕਰਕੇ ਕੁਝ ਸਮੇਂ ਬਾਅਦ ਕੋਸ਼ਿਸ਼ ਕਰੋ।', `We could not register you just now. Please try again, or email ${window.SIKHI_KHOJ_CONFIG.contactEmail}.`]));
   } finally {
     submit.disabled = false;

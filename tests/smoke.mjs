@@ -20,7 +20,8 @@ assert.equal((app.match(/\n\s+topic:/g) || []).length, 5, 'quiz should contain f
 assert.equal((app.match(/\n\s+answer:/g) || []).length, 5, 'every quiz question needs an answer');
 assert.match(config, /^\s*registrationEndpoint:\s*'https:\/\//m);
 assert.match(config, /^\s*analyticsMeasurementId:\s*'G-[A-Z0-9]+'/m);
-assert.match(html, /<script defer src="analytics\.js"><\/script>/);
+assert.match(html, /<script defer src="analytics\.js\?v=[0-9-]+"><\/script>/);
+assert.match(html, /<script defer src="app\.js\?v=[0-9-]+"><\/script>/);
 for (const event of ['web_language_selected', 'web_quiz_started', 'web_quiz_completed', 'web_registration_started', 'web_registration_submitted', 'web_registration_success', 'web_registration_error']) {
   assert.match(app, new RegExp(`analytics\\.event\\('${event}'`), `missing analytics event: ${event}`);
 }

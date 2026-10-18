@@ -20,6 +20,7 @@ Open `http://localhost:8080`. The production endpoint accepts requests only from
 - `app.js`: quiz questions copied from reviewed app content and the form behavior.
 
 Custom Analytics event names use the `web_` prefix so website actions are easy to distinguish from Unity app events. Google-managed automatic events such as `page_view`, `session_start` and `user_engagement` keep their standard names.
+The three JavaScript references in `index.html` carry a release version query so GitHub Pages/browser caching cannot keep an older event schema active after deployment. Bump the shared version whenever these scripts change.
 
 The website is mirrored to the public `brainforgegames/sikhi-khoj-app` repository because the private Unity repository's account plan does not support GitHub Pages. The public repository deploys the files without a build step. The canonical URL is:
 

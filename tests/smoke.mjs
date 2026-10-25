@@ -55,3 +55,5 @@ const localAssets = [...html.matchAll(/(?:src|href)="(?!https?:|mailto:|#)([^"?]
 for (const asset of localAssets) assert.ok(existsSync(join(root, asset)), `missing website asset: ${asset}`);
 
 console.log(`Website smoke checks passed (${localAssets.length} local asset references).`);
+
+await import('./behavior.mjs');

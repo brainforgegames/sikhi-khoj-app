@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import { existsSync, readFileSync } from 'node:fs';
+import { existsSync, readFileSync, statSync } from 'node:fs';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { runInNewContext } from 'node:vm';
@@ -13,6 +13,19 @@ const analytics = readFileSync(join(root, 'analytics.js'), 'utf8');
 
 assert.match(html, /<html lang="pa">/);
 assert.match(html, /id="quiz"/);
+const playStore = 'https://play.google.com/store/apps/details?id=com.brainforgegames.sikhikhoj';
+assert.ok(html.split(playStore).length >= 3, 'hero and download section must link to the real Android listing');
+assert.ok(app.includes(playStore), 'completed quiz must offer the Android listing');
+assert.doesNotMatch(html + app, /COMING SOON|JOIN THE LAUNCH LIST|NOTIFY ME AT LAUNCH|arrives on the App Store and Play Store/i, 'Android is available; do not restore prelaunch copy');
+assert.match(html, /Not yet available on iOS/);
+assert.match(html, /no announced release date yet/);
+assert.match(html, /App screens · Development preview/);
+assert.match(html, /version on Google Play may look different/);
+for (const file of ['en-lesson-development.jpg', 'pa-lesson-development.jpg']) {
+  assert.ok(statSync(join(root, 'assets/images/screenshots', file)).size < 500_000, 'app preview must stay below 500KB');
+}
+assert.doesNotMatch(html, /class="app-screen"|class="daily-card"/, 'marketing must not contain a fabricated app screen');
+
 assert.match(html, /id="registration-form"/);
 assert.match(html, /name="consent"/);
 assert.match(html, /contact@brainforgegames\.com/g);
@@ -55,3 +68,5 @@ const localAssets = [...html.matchAll(/(?:src|href)="(?!https?:|mailto:|#)([^"?]
 for (const asset of localAssets) assert.ok(existsSync(join(root, asset)), `missing website asset: ${asset}`);
 
 console.log(`Website smoke checks passed (${localAssets.length} local asset references).`);
+
+await import('./behavior.mjs');

@@ -87,7 +87,9 @@ function applyLanguage(language, persist = true) {
   }
   languageGate.classList.remove('is-open');
   languageGate.setAttribute('aria-hidden', 'true');
-  renderQuestion();
+  if (quizComplete) renderResult();
+  else renderQuestion();
+  if (formPending) setSendingLabel();
 }
 
 document.querySelectorAll('[data-language-choice]').forEach(button => button.addEventListener('click', () => {
@@ -105,6 +107,9 @@ languageSwitch.addEventListener('click', () => {
 let current = 0;
 let score = 0;
 let answered = false;
+let selectedAnswer = null;
+let quizComplete = false;
+let formPending = false;
 let quizStarted = false;
 
 const card = document.querySelector('#quiz-card');
@@ -113,7 +118,6 @@ const bar = document.querySelector('#quiz-progress-bar');
 const resetButton = document.querySelector('#quiz-reset');
 
 function renderQuestion() {
-  answered = false;
   const item = QUIZ[current];
   counter.textContent = activeLanguage === 'pa' ? `ਸਵਾਲ ${current + 1} / ${QUIZ.length}` : `QUESTION ${current + 1} / ${QUIZ.length}`;
   bar.style.width = `${((current + 1) / QUIZ.length) * 100}%`;
@@ -132,6 +136,7 @@ function renderQuestion() {
       <div id="quiz-feedback"></div>
     </div>`;
   card.querySelectorAll('.option').forEach(button => button.addEventListener('click', chooseAnswer));
+  if (answered) renderAnswer();
 }
 
 function chooseAnswer(event) {
@@ -144,6 +149,13 @@ function chooseAnswer(event) {
   const selected = Number(event.currentTarget.dataset.option);
   const item = QUIZ[current];
   if (selected === item.answer) score += 1;
+  selectedAnswer = selected;
+  renderAnswer();
+}
+
+function renderAnswer() {
+  const selected = selectedAnswer;
+  const item = QUIZ[current];
   card.querySelectorAll('.option').forEach((button, index) => {
     button.disabled = true;
     if (index === item.answer) button.classList.add('correct');
@@ -162,12 +174,17 @@ function chooseAnswer(event) {
 }
 
 function nextQuestion() {
+  if (!answered || quizComplete) return;
   if (current < QUIZ.length - 1) {
     current += 1;
+    answered = false;
+    selectedAnswer = null;
     renderQuestion();
     card.closest('.quiz-shell').scrollIntoView({ behavior: 'smooth', block: 'center' });
     return;
   }
+  quizComplete = true;
+  analytics.event('web_quiz_completed', { language: activeLanguage, score, question_count: QUIZ.length });
   renderResult();
 }
 
@@ -184,15 +201,17 @@ function renderResult() {
     <div class="result-card">
       <div class="result-ring"><div><strong>${score}/${QUIZ.length}</strong><span>${activeLanguage === 'pa' ? 'ਤੁਹਾਡਾ ਸਕੋਰ' : 'YOUR SCORE'}</span></div></div>
       <h3>${copy(message)}</h3>
-      <a class="button button-primary" href="#register"><span>${activeLanguage === 'pa' ? 'ਲਾਂਚ ਦੀ ਸੂਚਨਾ ਲਵੋ' : 'JOIN THE LAUNCH LIST'}</span></a>
+      <a class="button button-primary" href="https://play.google.com/store/apps/details?id=com.brainforgegames.sikhikhoj"><span>${activeLanguage === 'pa' ? 'Google Play ਤੋਂ ਐਪ ਲਵੋ' : 'Get it on Google Play'}</span></a>
     </div>`;
-  analytics.event('web_quiz_completed', { language: activeLanguage, score, question_count: QUIZ.length });
 }
 
 function resetQuiz() {
   analytics.event('web_quiz_restarted', { language: activeLanguage, previous_score: score });
   current = 0;
   score = 0;
+  answered = false;
+  selectedAnswer = null;
+  quizComplete = false;
   quizStarted = false;
   renderQuestion();
 }
@@ -214,12 +233,22 @@ form.addEventListener('input', () => {
 
 function showStatus(type, message) {
   status.className = `form-status ${type}`;
-  status.innerHTML = `<b>${message}</b>`;
+  status.textContent = message;
   status.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
+
+const REQUEST_TIMEOUT_MS = 15000;
+function setSendingLabel() {
+  submit.querySelector('span').textContent = copy(['ਭੇਜਿਆ ਜਾ ਰਿਹਾ ਹੈ…', 'SENDING…']);
 }
 
 form.addEventListener('submit', async event => {
   event.preventDefault();
+  if (formPending) return;
+  for (const field of Object.values(form.elements)) {
+    field.removeAttribute?.('aria-invalid');
+    field.removeAttribute?.('aria-describedby');
+  }
   status.className = 'form-status';
   const data = new FormData(form);
   const name = String(data.get('name') || '').trim();
@@ -233,40 +262,62 @@ form.addEventListener('submit', async event => {
   function reject(reason, message) {
     analytics.event('web_registration_validation_error', { language: activeLanguage, reason });
     showStatus('error', message);
+    const field = form.elements[({ whatsapp: 'phone', notification_method: 'notifyEmail' })[reason] || reason];
+    field?.setAttribute('aria-invalid', 'true');
+    field?.setAttribute('aria-describedby', 'form-status');
+    field?.focus();
   }
   if (name.length < 2) return reject('name', copy(['ਕਿਰਪਾ ਕਰਕੇ ਆਪਣਾ ਨਾਮ ਲਿਖੋ।', 'Please enter your name.']));
   if (!notifyEmail && !notifyWhatsApp) return reject('notification_method', copy(['ਈਮੇਲ ਜਾਂ WhatsApp ਵਿੱਚੋਂ ਘੱਟੋ-ਘੱਟ ਇੱਕ ਚੁਣੋ।', 'Choose at least one notification method.']));
-  if (notifyEmail && !email) return reject('email', copy(['ਈਮੇਲ ਸੂਚਨਾ ਲਈ ਆਪਣੀ ਈਮੇਲ ਲਿਖੋ।', 'Enter an email address for email updates.']));
-  if (notifyWhatsApp && !phone) return reject('whatsapp', copy(['WhatsApp ਸੂਚਨਾ ਲਈ ਆਪਣਾ ਨੰਬਰ ਲਿਖੋ।', 'Enter a phone number for WhatsApp updates.']));
+  if (notifyEmail && (!email || email.length > 160 || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email))) return reject('email', copy(['ਈਮੇਲ ਸੂਚਨਾ ਲਈ ਸਹੀ ਈਮੇਲ ਪਤਾ ਲਿਖੋ।', 'Enter a valid email address for email updates.']));
+  const phoneDigits = phone.replace(/\D/g, '');
+  if (notifyWhatsApp && (!/^\+?[0-9 ()-]+$/.test(phone) || phoneDigits.length < 7 || phoneDigits.length > 15 || phone.length > 24)) return reject('whatsapp', copy(['WhatsApp ਲਈ ਸਹੀ ਨੰਬਰ ਲਿਖੋ (7–15 ਅੰਕ); ਦੇਸ਼ ਦਾ ਕੋਡ ਵੀ ਸ਼ਾਮਲ ਕਰੋ।', 'Enter a valid WhatsApp number (7–15 digits); include your country code.']));
   if (!consent) return reject('consent', copy(['ਜਾਰੀ ਰੱਖਣ ਲਈ ਸਹਿਮਤੀ ਲੋੜੀਂਦੀ ਹੈ।', 'Consent is required to continue.']));
 
+  formPending = true;
   submit.disabled = true;
-  submit.querySelector('span').textContent = activeLanguage === 'pa' ? 'ਭੇਜਿਆ ਜਾ ਰਿਹਾ ਹੈ…' : 'SENDING…';
+  setSendingLabel();
   analytics.event('web_registration_submitted', { language: activeLanguage, notification_method: notificationMethod });
+  const controller = new AbortController();
+  let timeout;
+  let timedOut = false;
   try {
-    const response = await fetch(window.SIKHI_KHOJ_CONFIG.registrationEndpoint, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        name, email, phone, notifyEmail, notifyWhatsApp, consent,
-        website: String(data.get('website') || ''),
-        startedAt: Number(data.get('startedAt')),
-        language: activeLanguage,
-        source: 'prelaunch-site'
-      })
-    });
-    const result = await response.json().catch(() => ({}));
-    if (!response.ok) throw new Error(result.message || 'Registration failed');
+    const request = async () => {
+      const response = await fetch(window.SIKHI_KHOJ_CONFIG.registrationEndpoint, {
+        method: 'POST',
+        signal: controller.signal,
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name, ...(notifyEmail ? { email } : {}), ...(notifyWhatsApp ? { phone } : {}), notifyEmail, notifyWhatsApp, consent,
+          website: String(data.get('website') || ''),
+          startedAt: Number(data.get('startedAt')),
+          language: activeLanguage,
+          source: 'prelaunch-site'
+        })
+      });
+      const result = await response.json();
+      if (!response.ok || !result || typeof result !== 'object' || Array.isArray(result)) throw new Error('Registration failed');
+      return result;
+    };
+    const result = await Promise.race([request(), new Promise((_, reject) => {
+      timeout = setTimeout(() => {
+        timedOut = true;
+        controller.abort();
+        reject(new Error('Request timed out'));
+      }, REQUEST_TIMEOUT_MS);
+    })]);
     analytics.event('web_registration_success', { language: activeLanguage, notification_method: notificationMethod, duplicate: Boolean(result.duplicate) });
-    showStatus('success', copy(result.duplicate ? ['ਤੁਸੀਂ ਪਹਿਲਾਂ ਹੀ ਸੂਚੀ ਵਿੱਚ ਹੋ। ਧੰਨਵਾਦ!', 'You are already on the list. Thank you!'] : ['ਧੰਨਵਾਦ! ਲਾਂਚ ਵੇਲੇ ਅਸੀਂ ਤੁਹਾਨੂੰ ਸੂਚਿਤ ਕਰਾਂਗੇ।', 'Thank you! We’ll notify you when Sikhi Khoj launches.']));
+    showStatus('success', copy(result.duplicate ? ['ਤੁਸੀਂ ਪਹਿਲਾਂ ਹੀ ਸੂਚੀ ਵਿੱਚ ਹੋ। ਧੰਨਵਾਦ!', 'You are already on the list. Thank you!'] : ['ਧੰਨਵਾਦ! iOS ਉੱਤੇ ਉਪਲਬਧ ਹੋਣ ਵੇਲੇ ਅਸੀਂ ਤੁਹਾਨੂੰ ਸੂਚਿਤ ਕਰਾਂਗੇ।', 'Thank you! We’ll notify you when Sikhi Khoj is available on iOS.']));
     form.reset();
     form.elements.startedAt.value = String(Date.now());
   } catch {
-    analytics.event('web_registration_error', { language: activeLanguage, reason: 'network_or_backend' });
-    showStatus('error', copy(['ਹੁਣੇ ਰਜਿਸਟ੍ਰੇਸ਼ਨ ਨਹੀਂ ਹੋ ਸਕੀ। ਕਿਰਪਾ ਕਰਕੇ ਕੁਝ ਸਮੇਂ ਬਾਅਦ ਕੋਸ਼ਿਸ਼ ਕਰੋ।', `We could not register you just now. Please try again, or email ${window.SIKHI_KHOJ_CONFIG.contactEmail}.`]));
+    analytics.event('web_registration_error', { language: activeLanguage, reason: timedOut ? 'timeout' : 'network_or_backend' });
+    showStatus('error', copy([`ਰਜਿਸਟ੍ਰੇਸ਼ਨ ਦੀ ਪੁਸ਼ਟੀ ਨਹੀਂ ਹੋ ਸਕੀ। ਤੁਹਾਡੀ ਜਾਣਕਾਰੀ ਇੱਥੇ ਹੀ ਹੈ। ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ ਜਾਂ ${window.SIKHI_KHOJ_CONFIG.contactEmail} ਤੇ ਈਮੇਲ ਕਰੋ। ਜੇ ਬੇਨਤੀ ਪਹੁੰਚ ਗਈ ਸੀ, ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰਨ ਤੇ ਪਹਿਲਾਂ ਹੀ ਸੂਚੀ ਵਿੱਚ ਹੋਣ ਦਾ ਸੁਨੇਹਾ ਆ ਸਕਦਾ ਹੈ।`, `We could not confirm your registration. Your details are still here. Please retry, or email ${window.SIKHI_KHOJ_CONFIG.contactEmail}. If your request reached us, retrying may show you are already on the list.`]));
   } finally {
+    clearTimeout(timeout);
+    formPending = false;
     submit.disabled = false;
-    submit.querySelector('span').textContent = activeLanguage === 'pa' ? 'ਮੈਨੂੰ ਸੂਚਿਤ ਕਰੋ' : 'NOTIFY ME AT LAUNCH';
+    submit.querySelector('span').textContent = activeLanguage === 'pa' ? 'ਮੈਨੂੰ ਸੂਚਿਤ ਕਰੋ' : 'REQUEST AN iOS ALERT';
   }
 });
 
